@@ -92,7 +92,7 @@ disp(Results)
 rt = sqrt(A_t_target/pi());
 N = 48;
 
-wall_pts = moc_minlen_net(gamma, M_target, rt, N);
+[wall_pts, X, Y] = moc_minlen_net(gamma, M_target, rt, N);
 
 fprintf('Wall Coordinates (x, y):\n');
 for k = 1:size(wall_pts,1)
@@ -100,16 +100,48 @@ for k = 1:size(wall_pts,1)
 end
 
 % Plotting
-figure;
-plot(wall_pts(:,1), wall_pts(:,2), 'b-', 'LineWidth', 2); hold on;
-plot(wall_pts(:,1), -wall_pts(:,2), 'b-', 'LineWidth', 2); % Symmetry
-yline(0, 'k--');
+figure('Color', 'w');
+hold on; axis equal; grid on;
+
+% Plot Characteristic Mesh (Red Lines)
+% Fan Rays (C-): Connect (i,0) to (i,i)
+for i = 1:N
+    % Points for fixed i, varying j from 0 to i
+    % indices in X/Y are (i, 1) to (i, i+1)
+    plot(X(i, 1:i+1), Y(i, 1:i+1), 'r-', 'LineWidth', 0.5);
+end
+
+% Reflected Rays (C+): Connect (j,j) to (N,j) then to Wall
+for j = 1:N
+    % Kernel part: varying i from j to N for fixed j
+    % indices in X/Y are (j:N, j+1)
+    x_ray = X(j:N, j+1);
+    y_ray = Y(j:N, j+1);
+
+    % Extension to Wall
+    % Ray j ends at wall index j+1 (since wall index 1 is throat start)
+    x_ray(end+1) = wall_pts(j+1, 1);
+    y_ray(end+1) = wall_pts(j+1, 2);
+
+    plot(x_ray, y_ray, 'r-', 'LineWidth', 0.5);
+end
+
+% Plot Wall (Black Thick Line)
+plot(wall_pts(:,1), wall_pts(:,2), 'k-', 'LineWidth', 2);
+
+% Plot Axis (Black Line)
+yline(0, 'k-', 'LineWidth', 1.5);
+
+% Labels
 xlabel('Axial Position x (m)');
 ylabel('Radius r (m)');
-title('Minimum Length Nozzle Contour (MoC)');
-axis equal; grid on;
+title('Minimum Length Nozzle Design (MoC)');
 
-function wall_pts = moc_minlen_net(gam, Me, Rt, N)
+% Set limits to show full nozzle
+xlim([0, max(wall_pts(:,1))*1.05]);
+ylim([0, max(wall_pts(:,2))*1.2]);
+
+function [wall_pts, X, Y] = moc_minlen_net(gam, Me, Rt, N)
 % gam  : gamma
 % Me   : target exit Mach
 % Rt   : throat radius (sets scale)
