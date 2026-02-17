@@ -99,6 +99,16 @@ for k = 1:size(wall_pts,1)
     fprintf('%.6f, %.6f\n', wall_pts(k,1), wall_pts(k,2));
 end
 
+% Plotting
+figure;
+plot(wall_pts(:,1), wall_pts(:,2), 'b-', 'LineWidth', 2); hold on;
+plot(wall_pts(:,1), -wall_pts(:,2), 'b-', 'LineWidth', 2); % Symmetry
+yline(0, 'k--');
+xlabel('Axial Position x (m)');
+ylabel('Radius r (m)');
+title('Minimum Length Nozzle Contour (MoC)');
+axis equal; grid on;
+
 function wall_pts = moc_minlen_net(gam, Me, Rt, N)
 % gam  : gamma
 % Me   : target exit Mach
