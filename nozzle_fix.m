@@ -90,7 +90,7 @@ disp(Results)
 %%
 % matches? time for MoC to get a 2D contour of nozzle
 rt = sqrt(A_t_target/pi());
-N = 48;
+N = 100; % Higher resolution for smooth curvature
 
 [wall_pts, X, Y] = moc_minlen_net(gamma, M_target, rt, N);
 
@@ -103,43 +103,31 @@ end
 figure('Color', 'w');
 hold on; axis equal; grid on;
 
-% Plot Characteristic Mesh (Red Lines)
-% Fan Rays (C-): Connect (i,0) to (i,i)
-for i = 1:N
-    % Points for fixed i, varying j from 0 to i
-    % indices in X/Y are (i, 1) to (i, i+1)
-    plot(X(i, 1:i+1), Y(i, 1:i+1), 'r-', 'LineWidth', 0.5);
-end
+% Plot Wall Contour (Top and Bottom)
+x_wall = wall_pts(:,1);
+y_wall = wall_pts(:,2);
 
-% Reflected Rays (C+): Connect (j,j) to (N,j) then to Wall
-for j = 1:N
-    % Kernel part: varying i from j to N for fixed j
-    % indices in X/Y are (j:N, j+1)
-    x_ray = X(j:N, j+1);
-    y_ray = Y(j:N, j+1);
+plot(x_wall, y_wall, 'k-', 'LineWidth', 2);
+plot(x_wall, -y_wall, 'k-', 'LineWidth', 2);
 
-    % Extension to Wall
-    % Ray j ends at wall index j+1 (since wall index 1 is throat start)
-    x_ray(end+1) = wall_pts(j+1, 1);
-    y_ray(end+1) = wall_pts(j+1, 2);
+% Fill the nozzle interior for visualization
+fill([x_wall; flipud(x_wall)], [y_wall; flipud(-y_wall)], [0.9 0.9 0.9], 'EdgeColor', 'none');
 
-    plot(x_ray, y_ray, 'r-', 'LineWidth', 0.5);
-end
+% Redraw outline on top
+plot(x_wall, y_wall, 'k-', 'LineWidth', 2);
+plot(x_wall, -y_wall, 'k-', 'LineWidth', 2);
 
-% Plot Wall (Black Thick Line)
-plot(wall_pts(:,1), wall_pts(:,2), 'k-', 'LineWidth', 2);
-
-% Plot Axis (Black Line)
-yline(0, 'k-', 'LineWidth', 1.5);
+% Plot Axis
+yline(0, 'k--', 'LineWidth', 1);
 
 % Labels
 xlabel('Axial Position x (m)');
 ylabel('Radius r (m)');
-title('Minimum Length Nozzle Design (MoC)');
+title('Minimum Length Nozzle Contour');
 
-% Set limits to show full nozzle
-xlim([0, max(wall_pts(:,1))*1.05]);
-ylim([0, max(wall_pts(:,2))*1.2]);
+% Set limits
+xlim([0, max(x_wall)*1.05]);
+ylim([-max(y_wall)*1.2, max(y_wall)*1.2]);
 
 function [wall_pts, X, Y] = moc_minlen_net(gam, Me, Rt, N)
 % gam  : gamma
