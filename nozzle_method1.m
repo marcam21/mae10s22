@@ -135,8 +135,10 @@ xline(0, 'k--', 'LineWidth', 1);
 plot([0 0], [0 Rt], 'r-', 'LineWidth', 1.5); % Rt Line
 plot([x_nozzle(end) x_nozzle(end)], [0 Re], 'r-', 'LineWidth', 1.5); % Re Line
 
-text(0, Rt/2, sprintf('R_t = %.4f m', Rt), 'HorizontalAlignment', 'right', 'VerticalAlignment', 'middle', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
-text(x_nozzle(end), Re/2, sprintf('R_e = %.4f m', Re), 'HorizontalAlignment', 'right', 'VerticalAlignment', 'middle', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
+% Rt Label: Left and Down
+text(0, Rt/3, sprintf('R_t = %.4f m', Rt), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
+% Re Label: More Right
+text(x_nozzle(end), Re/3, sprintf('R_e = %.4f m', Re), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'top', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
 
 % 2. Inflection Point (xn, yn)
 plot(x_n, y_n, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 6);
