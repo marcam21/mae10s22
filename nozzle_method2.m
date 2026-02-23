@@ -79,8 +79,10 @@ M  = zeros(N, N+1);
 Mu = zeros(N, N+1);
 
 % Inverse PM Function Helper
-invPM = @(nu) fzero(@(m) nuPM(m) - nu, [1.0001, 100]);
-muMach = @(m) asin(1./m);
+% Use a local function at the end of script or a robust logic here.
+% Since we are inside a script, let's use a function handle that calls a robust local function defined at end.
+invPM = @(nu) invPM_robust(nu, nuPM, nu_max);
+muMach = @(m) muMach_safe(m);
 
 % Initialization: Fan Rays at Throat (j=0)
 % Physical location is (0, Rt) for all rays, but properties differ.
@@ -239,3 +241,65 @@ ylabel('Radius r (m)');
 title('Minimum Length Nozzle Contour (MoC)');
 xlim([-0.1*wall_x(end), 1.1*wall_x(end)]);
 ylim([-1.5*wall_y(end), 1.5*wall_y(end)]);
+
+% --- Helper Functions ---
+function M = invPM_robust(nu, nuPM_handle, nu_max)
+    % Robust Inverse Prandtl-Meyer Function
+    % Handle small nu (near M=1) and large nu (near vacuum)
+
+    if nu <= 1e-6
+        M = 1.0;
+        return;
+    end
+
+    if nu >= nu_max
+        nu = nu_max - 1e-6;
+    end
+
+    % Solver
+    % nuPM(M) is monotonic increasing.
+    % M=1 -> nu=0.
+    % We search in [1, large].
+
+    f = @(m) nuPM_handle(m) - nu;
+
+    % Try standard bracket
+    try
+        M = fzero(f, [1.0, 100]);
+    catch
+        % If 100 is not enough or bracket is bad
+        % Check if solution is > 100
+        val_100 = f(100);
+        if val_100 < 0
+            % nu(100) < target nu. Need larger M.
+            % Extend search
+             try
+                M = fzero(f, [100, 1000]);
+             catch
+                M = 1000; % Cap at M=1000
+             end
+        else
+            % Solution is < 100.
+            % Check if solution is near 1
+            % f(1) = 0 - nu < 0.
+            % f(100) > 0.
+            % Signs differ. fzero should work.
+            % If it failed, maybe nu is extremely close to 0.
+            try
+                M = fzero(f, [1.000001, 100]);
+            catch
+                M = 1.00001;
+            end
+        end
+    end
+end
+
+function val = muMach_safe(M)
+    if M <= 1
+        val = pi/2;
+    else
+        arg = 1/M;
+        if arg > 1; arg = 1; end
+        val = asin(arg);
+    end
+end
