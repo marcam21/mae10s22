@@ -131,6 +131,9 @@ fill([x_nozzle, fliplr(x_nozzle)], [y_nozzle, -fliplr(y_nozzle)], [0.9 0.9 1.0],
 plot(x_nozzle, y_nozzle, 'k-', 'LineWidth', 2);
 plot(x_nozzle, -y_nozzle, 'k-', 'LineWidth', 2);
 
+% Label Throat
+text(0, 0, 'Throat', 'HorizontalAlignment', 'right', 'VerticalAlignment', 'bottom', 'Rotation', 90, 'FontSize', 10);
+
 xlabel('Axial Position x (m)');
 ylabel('Radius r (m)');
 title('Nozzle Contour - Rao Parabolic Approximation');
