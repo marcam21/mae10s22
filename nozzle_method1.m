@@ -117,25 +117,43 @@ end
 % --- Plotting ---
 figure('Name', 'Method 1: Rao Parabolic');
 hold on; axis equal; grid on;
-% Upper Wall
-plot(x_nozzle, y_nozzle, 'k-', 'LineWidth', 2);
-% Lower Wall
-plot(x_nozzle, -y_nozzle, 'k-', 'LineWidth', 2);
-% Axis
-yline(0, 'k-.');
-% Inlet/Throat line
-xline(0, 'k--');
-% Fill
+
+% Fill Interior
 fill([x_nozzle, fliplr(x_nozzle)], [y_nozzle, -fliplr(y_nozzle)], [0.9 0.9 1.0], 'EdgeColor', 'none');
-% Re-plot contour
-plot(x_nozzle, y_nozzle, 'k-', 'LineWidth', 2);
-plot(x_nozzle, -y_nozzle, 'k-', 'LineWidth', 2);
 
-% Label Throat
-text(0, 0, 'Throat', 'HorizontalAlignment', 'right', 'VerticalAlignment', 'bottom', 'Rotation', 90, 'FontSize', 10);
+% Plot Upper and Lower Walls
+plot(x_nozzle, y_nozzle, 'k-', 'LineWidth', 2.5);
+plot(x_nozzle, -y_nozzle, 'k-', 'LineWidth', 2.5);
 
-xlabel('Axial Position x (m)');
-ylabel('Radius r (m)');
-title('Nozzle Contour - Rao Parabolic Approximation');
-xlim([-0.1*x_nozzle(end), 1.1*x_nozzle(end)]);
-ylim([-1.5*Re, 1.5*Re]);
+% Plot Axis
+yline(0, 'k-.', 'LineWidth', 1.5);
+xline(0, 'k--', 'LineWidth', 1);
+
+% --- Annotations ---
+
+% 1. Radii (Rt and Re)
+plot([0 0], [0 Rt], 'r-', 'LineWidth', 1.5); % Rt Line
+plot([x_nozzle(end) x_nozzle(end)], [0 Re], 'r-', 'LineWidth', 1.5); % Re Line
+
+text(0, Rt/2, sprintf('R_t = %.4f m', Rt), 'HorizontalAlignment', 'right', 'VerticalAlignment', 'middle', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
+text(x_nozzle(end), Re/2, sprintf('R_e = %.4f m', Re), 'HorizontalAlignment', 'right', 'VerticalAlignment', 'middle', 'Rotation', 90, 'FontSize', 10, 'Color', 'r');
+
+% 2. Inflection Point (xn, yn)
+plot(x_n, y_n, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 6);
+text(x_n, y_n*1.1, sprintf('Inflection\n(%.1f^o)', rad2deg(theta_n)), 'HorizontalAlignment', 'center', 'FontSize', 10);
+
+% 3. Exit Point Angle
+plot(x_nozzle(end), y_nozzle(end), 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 6);
+text(x_nozzle(end), y_nozzle(end)*1.1, sprintf('Exit\n(%.1f^o)', rad2deg(theta_e)), 'HorizontalAlignment', 'center', 'FontSize', 10);
+
+% 4. Throat Label
+text(-0.001, Rt*1.2, 'Throat Plane', 'HorizontalAlignment', 'right', 'FontSize', 10);
+
+% Axes Labels and Title
+xlabel('Axial Position x (m)', 'FontSize', 12, 'FontWeight', 'bold');
+ylabel('Radius r (m)', 'FontSize', 12, 'FontWeight', 'bold');
+title({'2D Nozzle Contour - Rao Parabolic Approximation'; sprintf('Area Ratio = %.1f', A_ratio_target)}, 'FontSize', 14);
+
+% Limits
+xlim([-0.005, x_nozzle(end)*1.1]);
+ylim([-Re*1.3, Re*1.3]);
