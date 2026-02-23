@@ -142,11 +142,11 @@ text(x_nozzle(end), Re/3, sprintf('R_e = %.4f m', Re), 'HorizontalAlignment', 'c
 
 % 2. Inflection Point (xn, yn)
 plot(x_n, y_n, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 6);
-text(x_n, y_n*1.1, sprintf('Inflection\n(%.1f^o)', rad2deg(theta_n)), 'HorizontalAlignment', 'center', 'FontSize', 10);
+text(x_n, y_n*1.1, sprintf('Inflection\n\\theta_n = %.1f^o', rad2deg(theta_n)), 'HorizontalAlignment', 'center', 'FontSize', 10);
 
 % 3. Exit Point Angle
 plot(x_nozzle(end), y_nozzle(end), 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 6);
-text(x_nozzle(end), y_nozzle(end)*1.1, sprintf('Exit\n(%.1f^o)', rad2deg(theta_e)), 'HorizontalAlignment', 'center', 'FontSize', 10);
+text(x_nozzle(end), y_nozzle(end)*1.1, sprintf('Exit\n\\theta_e = %.1f^o', rad2deg(theta_e)), 'HorizontalAlignment', 'center', 'FontSize', 10);
 
 % 4. Throat Label
 text(-0.001, Rt*1.2, 'Throat Plane', 'HorizontalAlignment', 'right', 'FontSize', 10);
